@@ -5,6 +5,10 @@
     <artifactId>germain-es-plugin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <organization>
+        <name>Germain Software, LLC</name>
+        <url>http://www.germainsoftware.com</url>
+    </organization>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,6 +20,29 @@
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <elasticsearch.assembly.descriptor>${basedir}/src/main/assembly/plugin.xml</elasticsearch.assembly.descriptor>
     </properties>
+    
+    <!-- Force central to be HTTPS -->    
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
     
     <dependencies>
         <dependency>
