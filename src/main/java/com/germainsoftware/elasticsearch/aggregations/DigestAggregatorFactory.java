@@ -15,16 +15,17 @@ import org.elasticsearch.search.aggregations.support.ValuesSourceConfig;
 import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
 
 public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
+
     private final MetricAggregatorSupplier aggregatorSupplier;
 
     DigestAggregatorFactory(
-        String name,
-        ValuesSourceConfig config,
-        AggregationContext context,
-        AggregatorFactory parent,
-        AggregatorFactories.Builder subFactoriesBuilder,
-        Map<String, Object> metadata,
-        MetricAggregatorSupplier aggregatorSupplier
+            String name,
+            ValuesSourceConfig config,
+            AggregationContext context,
+            AggregatorFactory parent,
+            AggregatorFactories.Builder subFactoriesBuilder,
+            Map<String, Object> metadata,
+            MetricAggregatorSupplier aggregatorSupplier
     ) throws IOException {
         super(name, config, context, parent, subFactoriesBuilder, metadata);
         this.aggregatorSupplier = aggregatorSupplier;
@@ -32,10 +33,10 @@ public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
 
     static void registerAggregators(ValuesSourceRegistry.Builder builder) {
         builder.register(
-            DigestAggregationBuilder.REGISTRY_KEY,
-            List.of(CoreValuesSourceType.KEYWORD),
-            DigestAggregator::new,
-            true
+                DigestAggregationBuilder.REGISTRY_KEY,
+                List.of(CoreValuesSourceType.KEYWORD),
+                DigestAggregator::new,
+                true
         );
     }
 
@@ -46,7 +47,7 @@ public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
 
     @Override
     protected Aggregator doCreateInternal(Aggregator parent, CardinalityUpperBound cardinality, Map<String, Object> metadata)
-        throws IOException {
+            throws IOException {
         return aggregatorSupplier.build(name, config, context, parent, metadata);
     }
 }

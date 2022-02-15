@@ -21,7 +21,7 @@ Digest aggregation
 ### Parameters
 
  - `field` : `binary` field to aggregate on. 
-	Note: In order to aggregate a `binary` field, it has to be added to `doc_values`.
+    Note: In order to aggregate a `binary` field, it has to be added to `doc_values`.
 
 Examples
 -------
@@ -35,19 +35,19 @@ PUT my-index
 {
   "mappings": {
     "properties": {
-	  "entryCount": {
-		"type": "long"
-	  },
-	  "name": {
+      "entryCount": {
+        "type": "long"
+      },
+      "name": {
         "type": "keyword"
       },
       "value.digest": {
         "type": "binary",
         "doc_values": true
       },
-	  "value.sum": {
-	    "type":"double"
-	  }
+      "value.sum": {
+        "type":"double"
+      }
     }
   }
 }
@@ -81,11 +81,11 @@ PUT /my-index/_doc/3
 
 POST /my-index/_search
 {
-	"size": 0,
-	"aggregations": {
-		"value_sum": { "sum": {"field": "value.sum" } },
-		"value_digest":{ "digest": { "field":"value.digest" } }
-	}
+    "size": 0,
+    "aggregations": {
+        "value_sum": { "sum": {"field": "value.sum" } },
+        "value_digest":{ "digest": { "field":"value.digest" } }
+    }
 }
 
 

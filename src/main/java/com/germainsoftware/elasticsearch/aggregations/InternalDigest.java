@@ -1,7 +1,6 @@
 package com.germainsoftware.elasticsearch.aggregations;
 
 import com.germainsoftware.elasticsearch.DigestByteMapper;
-import com.germainsoftware.elasticsearch.GermainLogger;
 import com.tdunning.math.stats.MergingDigest;
 import java.io.IOException;
 import java.util.Iterator;
@@ -63,16 +62,11 @@ public class InternalDigest extends InternalAggregation implements Digest {
 
     @Override
     public InternalDigest reduce(List<InternalAggregation> aggregations, ReduceContext reduceContext) {
-        GermainLogger.log("InternalDigest.reduce");
-        MergingDigest newDigest = new MergingDigest(DIGEST_COMPRESSION);
+        final var newDigest = new MergingDigest(DIGEST_COMPRESSION);
         for (InternalAggregation aggregation : aggregations) {
-            InternalDigest avg = (InternalDigest) aggregation;
-            newDigest.add(avg.digest);
+            newDigest.add(((InternalDigest)aggregation).digest);
         }
-        GermainLogger.log("Reduced " + aggregations.size() + " aggs. p95 = " + newDigest.quantile(0.95));
         newDigest.compress();
-        GermainLogger.log("Compressed aggs. p95 = " + newDigest.quantile(0.95));
-        
         return new InternalDigest(getName(), newDigest, getMetadata());
     }
 
@@ -102,7 +96,7 @@ public class InternalDigest extends InternalAggregation implements Digest {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         if (super.equals(obj) == false) return false;
-        InternalDigest other = (InternalDigest) obj;
+        final var other = (InternalDigest) obj;
         return Objects.equals(digest, other.digest);
     }
 }

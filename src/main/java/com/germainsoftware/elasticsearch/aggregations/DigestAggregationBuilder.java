@@ -19,16 +19,16 @@ import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.XContentBuilder;
 
-public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder
-        .SingleMetricAggregationBuilder<ValuesSource.Bytes,DigestAggregationBuilder> {
-    
+public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<ValuesSource.Bytes, DigestAggregationBuilder> {
+
     public static final String NAME = "digest";
     public static final ValuesSourceRegistry.RegistryKey<MetricAggregatorSupplier> REGISTRY_KEY = new ValuesSourceRegistry.RegistryKey<>(
-        NAME,
-        MetricAggregatorSupplier.class
+            NAME,
+            MetricAggregatorSupplier.class
     );
 
     public static final ObjectParser<DigestAggregationBuilder, String> PARSER = ObjectParser.fromBuilder(NAME, DigestAggregationBuilder::new);
+
     static {
         ValuesSourceAggregationBuilder.declareFields(PARSER, true, true, false);
     }
@@ -50,9 +50,6 @@ public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder
         return CoreValuesSourceType.KEYWORD;
     }
 
-    /**
-     * Read from a stream.
-     */
     public DigestAggregationBuilder(StreamInput in) throws IOException {
         super(in);
     }
@@ -68,13 +65,10 @@ public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder
     }
 
     @Override
-    protected DigestAggregatorFactory innerBuild(
-        AggregationContext context,
-        ValuesSourceConfig config,
-        AggregatorFactory parent,
-        AggregatorFactories.Builder subFactoriesBuilder
+    protected DigestAggregatorFactory innerBuild(AggregationContext context, ValuesSourceConfig config,
+            AggregatorFactory parent, AggregatorFactories.Builder subFactoriesBuilder
     ) throws IOException {
-        MetricAggregatorSupplier aggregatorSupplier = context.getValuesSourceRegistry().getAggregator(REGISTRY_KEY, config);
+        final var aggregatorSupplier = context.getValuesSourceRegistry().getAggregator(REGISTRY_KEY, config);
         return new DigestAggregatorFactory(name, config, context, parent, subFactoriesBuilder, metadata, aggregatorSupplier);
     }
 
