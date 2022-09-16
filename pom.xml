@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.germainsoftware</groupId>
     <artifactId>germainapm-es-plugin</artifactId>
-    <version>7.17.0</version>
+    <version>7.17.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <organization>
         <name>Germain Software, LLC</name>
@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <elasticsearch.version>7.17.0</elasticsearch.version>
+        <elasticsearch.version>7.17.6</elasticsearch.version>
         <junit.version>4.12</junit.version>
         <tdigest.version>3.2</tdigest.version>
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
