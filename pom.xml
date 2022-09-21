@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.germainsoftware</groupId>
     <artifactId>germainapm-es-plugin</artifactId>
-    <version>7.17.6</version>
+    <version>7.17.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     <organization>
         <name>Germain Software, LLC</name>
