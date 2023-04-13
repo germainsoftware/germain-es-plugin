@@ -23,6 +23,10 @@ public class ParsedDigest extends ParsedAggregation implements Digest {
             value = DigestByteMapper.fromBase64String(val);
         }
     }
+    
+    public double percentile(double percent) {
+        return value.quantile(percent);
+    }
 
     @Override
     public String getType() {

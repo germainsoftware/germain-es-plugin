@@ -34,7 +34,7 @@ public class RawDigestAggregatorFactory extends ValuesSourceAggregatorFactory {
     static void registerAggregators(ValuesSourceRegistry.Builder builder) {
         builder.register(
                 RawDigestAggregationBuilder.REGISTRY_KEY,
-                List.of(CoreValuesSourceType.KEYWORD),
+                List.of(CoreValuesSourceType.NUMERIC),
                 RawDigestAggregator::new,
                 true
         );

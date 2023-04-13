@@ -50,8 +50,12 @@ public class RawDigestAggregator extends MetricsAggregator {
                 digests = bigArrays().grow(digests, bucket + 1);
 
                 if (values.advanceExact(doc)) {
-                    final int valueCount = values.docValueCount();
+                    final var valueCount = values.docValueCount();
                     var digest = digests.get(bucket);
+                    if (digest == null) {
+                        digest = new MergingDigest(DIGEST_COMPRESSION);
+                    }
+                    
                     for (int i = 0; i < valueCount; i++) {
                         final var value = values.nextValue();
                         digest.add(value);

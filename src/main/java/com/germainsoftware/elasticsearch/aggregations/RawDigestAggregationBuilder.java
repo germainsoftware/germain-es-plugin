@@ -47,7 +47,7 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
 
     @Override
     protected ValuesSourceType defaultValueSourceType() {
-        return CoreValuesSourceType.KEYWORD;
+        return CoreValuesSourceType.NUMERIC;
     }
 
     public RawDigestAggregationBuilder(StreamInput in) throws IOException {
