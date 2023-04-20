@@ -31,12 +31,18 @@ public class InternalDigest extends InternalAggregation implements Digest {
      */
     public InternalDigest(StreamInput in) throws IOException {
         super(in);
-        digest = DigestByteMapper.fromByteArray(in.readByteArray());
+        final var arr = in.readByteArray();
+        if (arr != null && arr.length > 0) {
+            digest = DigestByteMapper.fromByteArray(arr);
+        } else {
+            digest = new MergingDigest(DIGEST_COMPRESSION);
+        }
     }
 
     @Override
     protected void doWriteTo(StreamOutput out) throws IOException {
-        out.writeByteArray(DigestByteMapper.toByteArray(digest));
+        final var arr = DigestByteMapper.toByteArray(digest);
+        out.writeByteArray(arr != null ? arr : new byte[0]);
     }
 
     @Override
@@ -64,7 +70,10 @@ public class InternalDigest extends InternalAggregation implements Digest {
     public InternalDigest reduce(List<InternalAggregation> aggregations, ReduceContext reduceContext) {
         final var newDigest = new MergingDigest(DIGEST_COMPRESSION);
         for (InternalAggregation aggregation : aggregations) {
-            newDigest.add(((InternalDigest)aggregation).digest);
+            final var other = ((InternalDigest)aggregation).digest;
+            if (other != null) {
+                newDigest.add(other);
+            }
         }
         newDigest.compress();
         return new InternalDigest(getName(), newDigest, getMetadata());
