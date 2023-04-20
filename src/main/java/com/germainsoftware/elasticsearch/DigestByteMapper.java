@@ -30,6 +30,9 @@ public class DigestByteMapper {
     }
     
     public static byte[] toByteArray(MergingDigest digest){
+        if (digest == null) {
+            return null;
+        }
         final var byteSize = digest.byteSize();
         final var byteBuffer = ByteBuffer.allocate(byteSize);
         digest.asBytes(byteBuffer);
