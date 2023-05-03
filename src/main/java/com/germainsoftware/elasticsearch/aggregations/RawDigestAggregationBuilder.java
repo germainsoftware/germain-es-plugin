@@ -1,5 +1,6 @@
 package com.germainsoftware.elasticsearch.aggregations;
 
+import com.germainsoftware.elasticsearch.GermainLogger;
 import java.io.IOException;
 import java.util.Map;
 import org.elasticsearch.common.io.stream.StreamInput;
@@ -16,6 +17,7 @@ import org.elasticsearch.search.aggregations.support.ValuesSourceConfig;
 import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
 import org.elasticsearch.search.aggregations.support.ValuesSourceType;
 import org.elasticsearch.xcontent.ObjectParser;
+import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.XContentBuilder;
 
@@ -23,35 +25,43 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
 
     public static final String NAME = "rawdigest";
     public static final ValuesSourceRegistry.RegistryKey<MetricAggregatorSupplier> REGISTRY_KEY = new ValuesSourceRegistry.RegistryKey<>(
-            NAME,
-            MetricAggregatorSupplier.class
+        NAME,
+        MetricAggregatorSupplier.class
     );
+    public static final ParseField COMPRESSION_FIELD = new ParseField("compression");
 
-    public static final ObjectParser<RawDigestAggregationBuilder, String> PARSER = ObjectParser.fromBuilder(NAME, RawDigestAggregationBuilder::new);
+    public static final ObjectParser<RawDigestAggregationBuilder, String> PARSER 
+        = ObjectParser.fromBuilder(NAME, RawDigestAggregationBuilder::new);
 
     static {
         ValuesSourceAggregationBuilder.declareFields(PARSER, true, true, false);
+        PARSER.declareDouble(RawDigestAggregationBuilder::compression, RawDigestAggregationBuilder.COMPRESSION_FIELD);
     }
 
     public static void registerAggregators(ValuesSourceRegistry.Builder builder) {
         RawDigestAggregatorFactory.registerAggregators(builder);
     }
 
+    // Digest compression factor
+    private double compression = 100.0;
+    
     public RawDigestAggregationBuilder(String name) {
         super(name);
     }
 
     public RawDigestAggregationBuilder(RawDigestAggregationBuilder clone, AggregatorFactories.Builder factoriesBuilder, Map<String, Object> metadata) {
         super(clone, factoriesBuilder, metadata);
+        this.compression = clone.compression;
+    }
+
+    public RawDigestAggregationBuilder(StreamInput in) throws IOException {
+        super(in);
+        this.compression = in.readDouble();
     }
 
     @Override
     protected ValuesSourceType defaultValueSourceType() {
         return CoreValuesSourceType.NUMERIC;
-    }
-
-    public RawDigestAggregationBuilder(StreamInput in) throws IOException {
-        super(in);
     }
 
     @Override
@@ -60,8 +70,8 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
     }
 
     @Override
-    protected void innerWriteTo(StreamOutput out) {
-        // Do nothing, no extra state to write to stream
+    protected void innerWriteTo(StreamOutput out) throws IOException {
+        out.writeDouble(compression);
     }
 
     @Override
@@ -69,11 +79,13 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
             AggregatorFactory parent, AggregatorFactories.Builder subFactoriesBuilder
     ) throws IOException {
         final var aggregatorSupplier = context.getValuesSourceRegistry().getAggregator(REGISTRY_KEY, config);
-        return new RawDigestAggregatorFactory(name, config, context, parent, subFactoriesBuilder, metadata, aggregatorSupplier);
+        return new RawDigestAggregatorFactory(name, config, context, parent, subFactoriesBuilder, 
+                metadata, aggregatorSupplier, compression);
     }
 
     @Override
     public XContentBuilder doXContentBody(XContentBuilder builder, Params params) throws IOException {
+        builder.field("compression", compression);
         return builder;
     }
 
@@ -85,5 +97,24 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
     @Override
     protected ValuesSourceRegistry.RegistryKey<?> getRegistryKey() {
         return REGISTRY_KEY;
+    }
+    
+    /**
+     * Sets the compression factor used for this digest aggregation.
+     * 
+     * @param compression The compression factor.
+     * @return This builder.
+     */
+    public RawDigestAggregationBuilder compression(double compression) {
+        this.compression = compression;
+        return this;
+    }
+
+    /**
+     * Gets the compression to use for this aggregation.
+     * @return The compression factor.
+     */
+    public double compression() {
+        return compression;
     }
 }

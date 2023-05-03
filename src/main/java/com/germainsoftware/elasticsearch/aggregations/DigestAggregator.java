@@ -1,7 +1,6 @@
 package com.germainsoftware.elasticsearch.aggregations;
 
 import com.germainsoftware.elasticsearch.DigestByteMapper;
-import static com.germainsoftware.elasticsearch.aggregations.InternalDigest.DIGEST_COMPRESSION;
 import com.tdunning.math.stats.MergingDigest;
 import java.io.IOException;
 import java.util.Map;
@@ -22,11 +21,12 @@ public class DigestAggregator extends MetricsAggregator {
 
     private final ValuesSource.Bytes valuesSource;
     private ObjectArray<MergingDigest> digests;
+    private double compression = 100.0;
 
     DigestAggregator(String name, ValuesSourceConfig valuesSourceConfig, AggregationContext context,
             Aggregator parent, Map<String, Object> metadata) throws IOException {
         super(name, context, parent, metadata);
-
+        
         this.valuesSource = valuesSourceConfig.hasValues() ? (ValuesSource.Bytes) valuesSourceConfig.getValuesSource() : null;
         if (valuesSource != null) {
             digests = context.bigArrays().newObjectArray(1);
@@ -53,14 +53,13 @@ public class DigestAggregator extends MetricsAggregator {
                 if (values.advanceExact(doc)) {
                     final int valueCount = values.docValueCount();
                     var digest = digests.get(bucket);
+                    if (digest == null) {
+                        digest = new MergingDigest(compression);
+                    }
                     for (int i = 0; i < valueCount; i++) {
                         final var value = values.nextValue();
                         final var digestValue = DigestByteMapper.fromByteArray(value.bytes, value.offset, value.length);
-                        if (digest == null) {
-                            digest = digestValue;
-                        } else {
-                            digest.add(digestValue);
-                        }
+                        digest.add(digestValue);
                     }
                     digests.set(bucket, digest);
                 }
@@ -78,7 +77,11 @@ public class DigestAggregator extends MetricsAggregator {
 
     @Override
     public InternalAggregation buildEmptyAggregation() {
-        return new InternalDigest(name, new MergingDigest(DIGEST_COMPRESSION), metadata());
+        return new InternalDigest(name, new MergingDigest(compression), metadata());
+    }
+
+    public void setCompression(double compression) {
+        this.compression = compression;
     }
 
     @Override

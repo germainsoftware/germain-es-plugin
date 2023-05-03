@@ -1,6 +1,5 @@
 package com.germainsoftware.elasticsearch.aggregations;
 
-import static com.germainsoftware.elasticsearch.aggregations.InternalDigest.DIGEST_COMPRESSION;
 import com.tdunning.math.stats.MergingDigest;
 import java.io.IOException;
 import java.util.Map;
@@ -21,11 +20,12 @@ public class RawDigestAggregator extends MetricsAggregator {
 
     private final ValuesSource.Numeric valuesSource;
     private ObjectArray<MergingDigest> digests;
+    private double compression = 100.0;
 
     RawDigestAggregator(String name, ValuesSourceConfig valuesSourceConfig, AggregationContext context,
             Aggregator parent, Map<String, Object> metadata) throws IOException {
         super(name, context, parent, metadata);
-
+        
         this.valuesSource = valuesSourceConfig.hasValues() ? (ValuesSource.Numeric) valuesSourceConfig.getValuesSource() : null;
         if (valuesSource != null) {
             digests = context.bigArrays().newObjectArray(1);
@@ -53,7 +53,7 @@ public class RawDigestAggregator extends MetricsAggregator {
                     final var valueCount = values.docValueCount();
                     var digest = digests.get(bucket);
                     if (digest == null) {
-                        digest = new MergingDigest(DIGEST_COMPRESSION);
+                        digest = new MergingDigest(compression);
                     }
                     
                     for (int i = 0; i < valueCount; i++) {
@@ -76,9 +76,13 @@ public class RawDigestAggregator extends MetricsAggregator {
 
     @Override
     public InternalAggregation buildEmptyAggregation() {
-        return new InternalDigest(name, new MergingDigest(DIGEST_COMPRESSION), metadata());
+        return new InternalDigest(name, new MergingDigest(compression), metadata());
     }
 
+    public void setCompression(double compression) {
+        this.compression = compression;
+    }
+    
     @Override
     public void doClose() {
         Releasables.close(digests);

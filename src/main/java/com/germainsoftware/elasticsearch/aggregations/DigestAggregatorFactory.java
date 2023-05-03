@@ -17,6 +17,7 @@ import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
 public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
 
     private final MetricAggregatorSupplier aggregatorSupplier;
+    private final double compression;
 
     DigestAggregatorFactory(
             String name,
@@ -25,10 +26,12 @@ public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
             AggregatorFactory parent,
             AggregatorFactories.Builder subFactoriesBuilder,
             Map<String, Object> metadata,
-            MetricAggregatorSupplier aggregatorSupplier
+            MetricAggregatorSupplier aggregatorSupplier,
+            double compression
     ) throws IOException {
         super(name, config, context, parent, subFactoriesBuilder, metadata);
         this.aggregatorSupplier = aggregatorSupplier;
+        this.compression = compression;
     }
 
     static void registerAggregators(ValuesSourceRegistry.Builder builder) {
@@ -42,12 +45,18 @@ public class DigestAggregatorFactory extends ValuesSourceAggregatorFactory {
 
     @Override
     protected Aggregator createUnmapped(Aggregator parent, Map<String, Object> metadata) throws IOException {
-        return new DigestAggregator(name, config, context, parent, metadata);
+        final var aggregator = new DigestAggregator(name, config, context, parent, metadata);
+        aggregator.setCompression(compression);
+        return aggregator;        
     }
 
     @Override
     protected Aggregator doCreateInternal(Aggregator parent, CardinalityUpperBound cardinality, Map<String, Object> metadata)
             throws IOException {
-        return aggregatorSupplier.build(name, config, context, parent, metadata);
+        final var aggregator = aggregatorSupplier.build(name, config, context, parent, metadata);
+        if (aggregator instanceof DigestAggregator) {
+            ((DigestAggregator)aggregator).setCompression(compression);
+        }
+        return aggregator;
     }
 }

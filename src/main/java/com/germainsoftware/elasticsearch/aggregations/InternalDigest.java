@@ -16,7 +16,6 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 public class InternalDigest extends InternalAggregation implements Digest {
 
-    public static final double DIGEST_COMPRESSION = 100.0;
     private final MergingDigest digest;
 
     public InternalDigest(String name, MergingDigest digest, Map<String, Object> metadata) {
@@ -31,16 +30,18 @@ public class InternalDigest extends InternalAggregation implements Digest {
      */
     public InternalDigest(StreamInput in) throws IOException {
         super(in);
+        final var compression = in.readDouble();
         final var arr = in.readByteArray();
         if (arr != null && arr.length > 0) {
             digest = DigestByteMapper.fromByteArray(arr);
         } else {
-            digest = new MergingDigest(DIGEST_COMPRESSION);
+            digest = new MergingDigest(compression);
         }
     }
 
     @Override
     protected void doWriteTo(StreamOutput out) throws IOException {
+        out.writeDouble(digest.compression());
         final var arr = DigestByteMapper.toByteArray(digest);
         out.writeByteArray(arr != null ? arr : new byte[0]);
     }
@@ -68,7 +69,7 @@ public class InternalDigest extends InternalAggregation implements Digest {
 
     @Override
     public InternalDigest reduce(List<InternalAggregation> aggregations, ReduceContext reduceContext) {
-        final var newDigest = new MergingDigest(DIGEST_COMPRESSION);
+        final var newDigest = new MergingDigest(digest.compression());
         for (InternalAggregation aggregation : aggregations) {
             final var other = ((InternalDigest)aggregation).digest;
             if (other != null) {
