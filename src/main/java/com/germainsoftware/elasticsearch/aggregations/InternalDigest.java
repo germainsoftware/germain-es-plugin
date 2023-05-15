@@ -20,6 +20,9 @@ public class InternalDigest extends InternalAggregation implements Digest {
 
     public InternalDigest(String name, MergingDigest digest, Map<String, Object> metadata) {
         super(name, metadata);
+        if (digest == null) {
+            throw new IllegalArgumentException("Digest was null");
+        }
         this.digest = digest;
     }
 
@@ -34,6 +37,9 @@ public class InternalDigest extends InternalAggregation implements Digest {
         final var arr = in.readByteArray();
         if (arr != null && arr.length > 0) {
             digest = DigestByteMapper.fromByteArray(arr);
+            if (digest == null) {
+                throw new IllegalArgumentException("Digest from stream was null");
+            }
         } else {
             digest = new MergingDigest(compression);
         }

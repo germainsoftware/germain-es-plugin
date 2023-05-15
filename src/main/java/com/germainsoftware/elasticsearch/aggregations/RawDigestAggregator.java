@@ -71,7 +71,11 @@ public class RawDigestAggregator extends MetricsAggregator {
         if (valuesSource == null || bucket >= digests.size()) {
             return buildEmptyAggregation();
         }
-        return new InternalDigest(name, digests.get(bucket), metadata());
+        final var digest = digests.get(bucket);
+        if (digest == null) {
+            return buildEmptyAggregation();
+        }
+        return new InternalDigest(name, digest, metadata());
     }
 
     @Override
