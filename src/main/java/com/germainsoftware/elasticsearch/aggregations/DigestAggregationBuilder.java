@@ -2,6 +2,7 @@ package com.germainsoftware.elasticsearch.aggregations;
 
 import java.io.IOException;
 import java.util.Map;
+import org.elasticsearch.TransportVersion;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -10,7 +11,6 @@ import org.elasticsearch.search.aggregations.AggregatorFactory;
 import org.elasticsearch.search.aggregations.metrics.MetricAggregatorSupplier;
 import org.elasticsearch.search.aggregations.support.AggregationContext;
 import org.elasticsearch.search.aggregations.support.CoreValuesSourceType;
-import org.elasticsearch.search.aggregations.support.ValuesSource;
 import org.elasticsearch.search.aggregations.support.ValuesSourceAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.ValuesSourceConfig;
 import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
@@ -20,7 +20,7 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.XContentBuilder;
 
-public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<ValuesSource.Bytes, DigestAggregationBuilder> {
+public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<DigestAggregationBuilder> {
 
     public static final String NAME = "digest";
     public static final ValuesSourceRegistry.RegistryKey<MetricAggregatorSupplier> REGISTRY_KEY = new ValuesSourceRegistry.RegistryKey<>(
@@ -115,5 +115,10 @@ public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder.Sin
      */
     public double compression() {
         return compression;
+    }
+    
+    @Override
+    public TransportVersion getMinimalSupportedVersion() {
+        return TransportVersion.ZERO;
     }
 }

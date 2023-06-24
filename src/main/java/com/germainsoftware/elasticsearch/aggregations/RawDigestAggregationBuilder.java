@@ -1,8 +1,8 @@
 package com.germainsoftware.elasticsearch.aggregations;
 
-import com.germainsoftware.elasticsearch.GermainLogger;
 import java.io.IOException;
 import java.util.Map;
+import org.elasticsearch.TransportVersion;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -11,7 +11,6 @@ import org.elasticsearch.search.aggregations.AggregatorFactory;
 import org.elasticsearch.search.aggregations.metrics.MetricAggregatorSupplier;
 import org.elasticsearch.search.aggregations.support.AggregationContext;
 import org.elasticsearch.search.aggregations.support.CoreValuesSourceType;
-import org.elasticsearch.search.aggregations.support.ValuesSource;
 import org.elasticsearch.search.aggregations.support.ValuesSourceAggregationBuilder;
 import org.elasticsearch.search.aggregations.support.ValuesSourceConfig;
 import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
@@ -21,7 +20,7 @@ import org.elasticsearch.xcontent.ParseField;
 import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.XContentBuilder;
 
-public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<ValuesSource.Numeric, RawDigestAggregationBuilder> {
+public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<RawDigestAggregationBuilder> {
 
     public static final String NAME = "rawdigest";
     public static final ValuesSourceRegistry.RegistryKey<MetricAggregatorSupplier> REGISTRY_KEY = new ValuesSourceRegistry.RegistryKey<>(
@@ -116,5 +115,10 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
      */
     public double compression() {
         return compression;
+    }
+        
+    @Override
+    public TransportVersion getMinimalSupportedVersion() {
+        return TransportVersion.ZERO;
     }
 }

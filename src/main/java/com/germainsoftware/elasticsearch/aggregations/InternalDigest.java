@@ -3,15 +3,13 @@ package com.germainsoftware.elasticsearch.aggregations;
 import com.germainsoftware.elasticsearch.DigestByteMapper;
 import com.tdunning.math.stats.MergingDigest;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.search.aggregations.AggregationReduceContext;
 import org.elasticsearch.search.aggregations.InternalAggregation;
-import org.elasticsearch.search.aggregations.InternalAggregation.ReduceContext;
-import org.elasticsearch.search.aggregations.support.AggregationPath;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 public class InternalDigest extends InternalAggregation implements Digest {
@@ -74,7 +72,7 @@ public class InternalDigest extends InternalAggregation implements Digest {
     }
 
     @Override
-    public InternalDigest reduce(List<InternalAggregation> aggregations, ReduceContext reduceContext) {
+    public InternalDigest reduce(List<InternalAggregation> aggregations, AggregationReduceContext reduceContext) {
         final var newDigest = new MergingDigest(digest.compression());
         for (InternalAggregation aggregation : aggregations) {
             final var other = ((InternalDigest)aggregation).digest;
@@ -90,11 +88,6 @@ public class InternalDigest extends InternalAggregation implements Digest {
     public XContentBuilder doXContentBody(XContentBuilder builder, Params params) throws IOException {
         builder.field(CommonFields.VALUE.getPreferredName(), digest.size() != 0 ? DigestByteMapper.toByteArray(digest) : null);
         return builder;
-    }
-    
-    @Override
-    public final double sortValue(AggregationPath.PathElement head, Iterator<AggregationPath.PathElement> tail) {
-        throw new IllegalArgumentException("Digest aggregations cannot have sub-aggregations (at [>" + head + "]");
     }
 
     @Override
