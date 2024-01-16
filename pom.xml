@@ -16,7 +16,6 @@
         <elasticsearch.version>8.8.1</elasticsearch.version>
         <junit.version>4.12</junit.version>
         <tdigest.version>3.2</tdigest.version>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <elasticsearch.assembly.descriptor>${basedir}/src/main/assembly/plugin.xml</elasticsearch.assembly.descriptor>
     </properties>
     
@@ -69,7 +68,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
