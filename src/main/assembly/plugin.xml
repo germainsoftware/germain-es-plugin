@@ -12,6 +12,10 @@
             <includes>
                 <include>*.jar</include>
             </includes>
+            <!-- Exclude original JAR missing shaded dependencies -->
+            <excludes>
+                <exclude>original-*</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
     <files>
@@ -24,6 +28,9 @@
     
     <dependencySets>
         <dependencySet>
+            <excludes>
+                <exclude>com.tdunning:t-digest</exclude>
+            </excludes>
             <outputDirectory>/</outputDirectory>
             <unpack>false</unpack>
         </dependencySet>
