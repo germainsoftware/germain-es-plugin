@@ -1,4 +1,4 @@
-germainAPM Elasticsearch Plugin
+germainUX Elasticsearch Plugin
 =========================================
 
 This plugin adds the ability to compute percentile values for aggregated data. 
