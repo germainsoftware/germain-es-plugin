@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.aggregations.AggregationReduceContext;
+import org.elasticsearch.search.aggregations.AggregatorReducer;
 import org.elasticsearch.search.aggregations.InternalAggregation;
 import org.elasticsearch.xcontent.XContentBuilder;
 
@@ -72,16 +73,24 @@ public class InternalDigest extends InternalAggregation implements Digest {
     }
 
     @Override
-    public InternalDigest reduce(List<InternalAggregation> aggregations, AggregationReduceContext reduceContext) {
-        final var newDigest = new MergingDigest(digest.compression());
-        for (InternalAggregation aggregation : aggregations) {
-            final var other = ((InternalDigest)aggregation).digest;
-            if (other != null) {
-                newDigest.add(other);
+    protected AggregatorReducer getLeaderReducer(AggregationReduceContext arc, int i) {
+        return new AggregatorReducer() {
+            MergingDigest merged = new MergingDigest(digest.compression());
+
+            @Override
+            public void accept(InternalAggregation aggregation) {
+                final var other = ((InternalDigest)aggregation).digest;
+                if (other != null) {
+                    merged.add(other);
+                }
             }
-        }
-        newDigest.compress();
-        return new InternalDigest(getName(), newDigest, getMetadata());
+
+            @Override
+            public InternalAggregation get() {
+                merged.compress();
+                return new InternalDigest(getName(), merged, getMetadata());
+            }
+        };
     }
 
     @Override
