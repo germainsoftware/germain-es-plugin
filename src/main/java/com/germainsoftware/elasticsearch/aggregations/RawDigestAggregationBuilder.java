@@ -93,11 +93,6 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
     public String getType() {
         return NAME;
     }
-
-    @Override
-    protected ValuesSourceRegistry.RegistryKey<?> getRegistryKey() {
-        return REGISTRY_KEY;
-    }
     
     /**
      * Sets the compression factor used for this digest aggregation.
