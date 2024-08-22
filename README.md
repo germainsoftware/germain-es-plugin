@@ -9,7 +9,7 @@ a merged digest value for each bucket.
 Installation
 ------------
 
-`bin/elasticsearch-plugin install "https://github.com/germainsoftware/germain-es-plugin/releases/download/v8.9.2/germainapm-es-plugin-8.9.2.zip"`
+`bin/elasticsearch-plugin install "https://github.com/germainsoftware/germain-es-plugin/releases/download/v8.10.4/germainapm-es-plugin-8.10.4.zip"`
 
 Build
 -----
