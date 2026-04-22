@@ -115,6 +115,6 @@ public class DigestAggregationBuilder extends ValuesSourceAggregationBuilder.Sin
     
     @Override
     public TransportVersion getMinimalSupportedVersion() {
-        return TransportVersions.ZERO;
+        return TransportVersions.V_7_0_0;
     }
 }

@@ -9,11 +9,11 @@ a merged digest value for each bucket.
 Installation
 ------------
 
-`bin/elasticsearch-plugin install "https://github.com/germainsoftware/germain-es-plugin/releases/download/v8.18.0/germainapm-es-plugin-8.18.0.zip"`
+`bin/elasticsearch-plugin install "https://github.com/germainsoftware/germain-es-plugin/releases/download/v9.2.6/germainapm-es-plugin-9.2.6.zip"`
 
 Build
 -----
-Requires Java 17
+Builds with JDK 21+ (required to link against Elasticsearch 9.2.6). Output bytecode targets Java 17, so the jar is also consumable by Java 17 clients. Runs on Elasticsearch 9.2.6 (JDK 21).
 
 Digest aggregation
 --------------------------

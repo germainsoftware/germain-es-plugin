@@ -115,6 +115,6 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
         
     @Override
     public TransportVersion getMinimalSupportedVersion() {
-        return TransportVersions.ZERO;
+        return TransportVersions.V_7_0_0;
     }
 }
