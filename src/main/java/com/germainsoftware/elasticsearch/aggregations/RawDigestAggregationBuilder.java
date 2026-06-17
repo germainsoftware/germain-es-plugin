@@ -3,7 +3,6 @@ package com.germainsoftware.elasticsearch.aggregations;
 import java.io.IOException;
 import java.util.Map;
 import org.elasticsearch.TransportVersion;
-import org.elasticsearch.TransportVersions;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -18,7 +17,6 @@ import org.elasticsearch.search.aggregations.support.ValuesSourceRegistry;
 import org.elasticsearch.search.aggregations.support.ValuesSourceType;
 import org.elasticsearch.xcontent.ObjectParser;
 import org.elasticsearch.xcontent.ParseField;
-import org.elasticsearch.xcontent.ToXContent.Params;
 import org.elasticsearch.xcontent.XContentBuilder;
 
 public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.SingleMetricAggregationBuilder<RawDigestAggregationBuilder> {
@@ -41,6 +39,9 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
     public static void registerAggregators(ValuesSourceRegistry.Builder builder) {
         RawDigestAggregatorFactory.registerAggregators(builder);
     }
+
+    // TransportVersions was removed in ES 9.x; 7_000_099 is the numeric ID of the former V_7_0_0
+    private static final TransportVersion MIN_TRANSPORT_VERSION = TransportVersion.fromId(7_000_099);
 
     // Digest compression factor
     private double compression = 100.0;
@@ -115,6 +116,6 @@ public class RawDigestAggregationBuilder extends ValuesSourceAggregationBuilder.
         
     @Override
     public TransportVersion getMinimalSupportedVersion() {
-        return TransportVersions.V_7_0_0;
+        return MIN_TRANSPORT_VERSION;
     }
 }

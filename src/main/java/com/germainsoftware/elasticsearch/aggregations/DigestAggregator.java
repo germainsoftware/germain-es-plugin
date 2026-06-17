@@ -58,7 +58,9 @@ public class DigestAggregator extends MetricsAggregator {
                     for (int i = 0; i < valueCount; i++) {
                         final var value = values.nextValue();
                         final var digestValue = DigestByteMapper.fromByteArray(value.bytes, value.offset, value.length);
-                        digest.add(digestValue);
+                        if (digestValue != null) {
+                            digest.add(digestValue);
+                        }
                     }
                     digests.set(bucket, digest);
                 }
@@ -75,12 +77,12 @@ public class DigestAggregator extends MetricsAggregator {
         if (digest == null) {
             return buildEmptyAggregation();
         }
-        return new InternalDigest(name, digest, metadata());
+        return new InternalDigest(name, DigestAggregationBuilder.NAME, digest, metadata());
     }
 
     @Override
     public InternalAggregation buildEmptyAggregation() {
-        return new InternalDigest(name, new MergingDigest(compression), metadata());
+        return new InternalDigest(name, DigestAggregationBuilder.NAME, new MergingDigest(compression), metadata());
     }
 
     public void setCompression(double compression) {
@@ -89,6 +91,6 @@ public class DigestAggregator extends MetricsAggregator {
 
     @Override
     public void doClose() {
-        Releasables.close(digests);
+        if (digests != null) Releasables.close(digests);
     }
 }

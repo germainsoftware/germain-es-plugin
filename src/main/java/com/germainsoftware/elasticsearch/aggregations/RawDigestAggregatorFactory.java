@@ -52,10 +52,8 @@ public class RawDigestAggregatorFactory extends ValuesSourceAggregatorFactory {
 
     @Override
     protected Aggregator doCreateInternal(Aggregator parent, CardinalityUpperBound cardinality, Map<String, Object> metadata) throws IOException {
-        final var aggregator = aggregatorSupplier.build(name, config, context, parent, metadata);
-        if (aggregator instanceof RawDigestAggregator) {
-            ((RawDigestAggregator)aggregator).setCompression(compression);
-        }
+        final var aggregator = (RawDigestAggregator) aggregatorSupplier.build(name, config, context, parent, metadata);
+        aggregator.setCompression(compression);
         return aggregator;
     }
 }

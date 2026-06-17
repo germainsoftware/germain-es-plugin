@@ -17,11 +17,10 @@ public class DigestByteMapper {
     }
 
     public static MergingDigest fromByteArray(byte[] bytes, int offset, int length) {
-        final var byteBuffer = ByteBuffer.wrap(new byte[length]);
-        byteBuffer.put(bytes, offset, length);
-        // Fix to make this compile on JDK11 and run on JDK8
-        ((Buffer)byteBuffer).flip();
-        return MergingDigest.fromBytes(byteBuffer);
+        if (length == 0) {
+            return null;
+        }
+        return MergingDigest.fromBytes(ByteBuffer.wrap(bytes, offset, length));
     }
     
     public static MergingDigest fromBase64String(String s) {

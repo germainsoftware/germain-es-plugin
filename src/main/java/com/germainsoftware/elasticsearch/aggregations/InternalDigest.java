@@ -15,32 +15,36 @@ import org.elasticsearch.xcontent.XContentBuilder;
 
 public class InternalDigest extends InternalAggregation implements Digest {
 
+    private final String writeableName;
     private final MergingDigest digest;
 
-    public InternalDigest(String name, MergingDigest digest, Map<String, Object> metadata) {
+    public InternalDigest(String name, String writeableName, MergingDigest digest, Map<String, Object> metadata) {
         super(name, metadata);
         if (digest == null) {
             throw new IllegalArgumentException("Digest was null");
         }
+        this.writeableName = writeableName;
         this.digest = digest;
     }
 
-    /**
-     * Read from a stream.
-     * @param in
-     * @throws java.io.IOException
-     */
+    /** Read from a stream; used by the "digest" reader registered in GermainPlugin. */
     public InternalDigest(StreamInput in) throws IOException {
+        this(in, DigestAggregationBuilder.NAME);
+    }
+
+    /** Read from a stream with an explicit writeable name; used by the "rawdigest" reader. */
+    public InternalDigest(StreamInput in, String writeableName) throws IOException {
         super(in);
+        this.writeableName = writeableName;
         final var compression = in.readDouble();
         final var arr = in.readByteArray();
         if (arr != null && arr.length > 0) {
-            digest = DigestByteMapper.fromByteArray(arr);
-            if (digest == null) {
+            this.digest = DigestByteMapper.fromByteArray(arr);
+            if (this.digest == null) {
                 throw new IllegalArgumentException("Digest from stream was null");
             }
         } else {
-            digest = new MergingDigest(compression);
+            this.digest = new MergingDigest(compression);
         }
     }
 
@@ -69,7 +73,7 @@ public class InternalDigest extends InternalAggregation implements Digest {
     
     @Override
     public String getWriteableName() {
-        return DigestAggregationBuilder.NAME;
+        return writeableName;
     }
 
     @Override
@@ -88,7 +92,7 @@ public class InternalDigest extends InternalAggregation implements Digest {
             @Override
             public InternalAggregation get() {
                 merged.compress();
-                return new InternalDigest(getName(), merged, getMetadata());
+                return new InternalDigest(getName(), writeableName, merged, getMetadata());
             }
         };
     }

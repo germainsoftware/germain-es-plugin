@@ -18,10 +18,10 @@ public class GermainPlugin extends Plugin implements SearchPlugin {
                     DigestAggregationBuilder.PARSER)
                 .addResultReader(InternalDigest::new)
                 .setAggregatorRegistrar(DigestAggregationBuilder::registerAggregators),
-            new AggregationSpec(RawDigestAggregationBuilder.NAME, 
-                    RawDigestAggregationBuilder::new, 
+            new AggregationSpec(RawDigestAggregationBuilder.NAME,
+                    RawDigestAggregationBuilder::new,
                     RawDigestAggregationBuilder.PARSER)
-                .addResultReader(InternalDigest::new)
+                .addResultReader(in -> new InternalDigest(in, RawDigestAggregationBuilder.NAME))
                 .setAggregatorRegistrar(RawDigestAggregationBuilder::registerAggregators)
         );
     }
